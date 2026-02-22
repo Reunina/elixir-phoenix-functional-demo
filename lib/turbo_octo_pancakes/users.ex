@@ -26,6 +26,7 @@ defmodule TurboOctoPancakes.Users do
     users =
       %{}
       |> init(opts)
+      |> apply_filters()
       |> order_by()
       |> repo_all()
 
@@ -42,10 +43,11 @@ defmodule TurboOctoPancakes.Users do
       |> Map.get(:query)
       |> repo().all()
 
-  defp init(ctx, opt) do
+  defp init(ctx, opts) do
     ctx
     |> Map.put(:query, User)
-    |> Map.put(:order, opt |> Map.get(:order))
+    |> Map.put(:order, Map.get(opts, :order))
+    |> Map.put(:filter, Map.get(opts, :filter, %{}))
   end
 
   defp order_by(%{query: query, order: :by_name} = ctx),
@@ -59,4 +61,26 @@ defmodule TurboOctoPancakes.Users do
       })
 
   defp order_by(ctx), do: ctx
+
+  defp apply_filters(%{query: query} = ctx) do
+    filters = Map.get(ctx, :filter, %{})
+
+    updated_query =
+      Enum.reduce(filters, query, fn
+        {:by_name, name}, acc_query -> filter_by_name(acc_query, name)
+        _, acc_query -> acc_query
+      end)
+
+    Map.put(ctx, :query, updated_query)
+  end
+
+  defp filter_by_name(query, name) do
+    search_term = "%#{name}%"
+
+    from u in query,
+      where:
+        ilike(u.first_name, ^search_term) or
+          ilike(u.last_name, ^search_term) or
+          ilike(fragment("? || ' ' || ?", u.first_name, u.last_name), ^search_term)
+  end
 end

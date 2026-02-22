@@ -3,12 +3,13 @@ defmodule TurboOctoPancakesWeb.UserController do
 
   alias TurboOctoPancakesWeb.UserJSON
 
-  def index(conn, _params) do
-    opt =
+  def index(conn, params) do
+    opts =
       %{}
-      |> Map.put(:order, :by_name)
+      |> add_filter(:name, params["name"])
+      |> add_order(order_by: :by_name)
 
-    case users_context().list_users(opt) do
+    case users_context().list_users(opts) do
       {:ok, users} ->
         conn
         |> put_status(:ok)
@@ -20,6 +21,16 @@ defmodule TurboOctoPancakesWeb.UserController do
         |> json(UserJSON.error(%{message: "Internal server error"}))
     end
   end
+
+  defp add_filter(opts, :name, nil), do: opts
+  defp add_filter(opts, :name, ""), do: opts
+
+  defp add_filter(opts, :name, value) when is_binary(value),
+    do: Map.put(opts, :filter, %{by_name: String.trim(value)})
+
+  defp add_filter(opts, _key, _value), do: opts
+
+  defp add_order(opts, order_by: fields), do: Map.put(opts, :order, fields)
 
   defp users_context,
     do: Application.get_env(:turbo_octo_pancakes, :users_context, TurboOctoPancakes.Users)

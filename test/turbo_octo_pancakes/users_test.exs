@@ -31,6 +31,60 @@ defmodule TurboOctoPancakes.UsersTest do
       assert ids == [alice.id, bob.id, zara.id]
     end
 
+    test "filters by name (first_name)" do
+      _other =
+        %User{}
+        |> User.changeset(%{first_name: "Other", last_name: "User"})
+        |> Repo.insert!()
+
+      jane =
+        %User{}
+        |> User.changeset(%{first_name: "Jane", last_name: "Doe"})
+        |> Repo.insert!()
+
+      assert {:ok, users} = Users.list_users(%{filter: %{by_name: "Jane"}})
+      assert length(users) == 1
+      assert hd(users).id == jane.id
+    end
+
+    test "filters by name (last_name)" do
+      _other =
+        %User{}
+        |> User.changeset(%{first_name: "Other", last_name: "User"})
+        |> Repo.insert!()
+
+      jane =
+        %User{}
+        |> User.changeset(%{first_name: "Jane", last_name: "Doe"})
+        |> Repo.insert!()
+
+      assert {:ok, users} = Users.list_users(%{filter: %{by_name: "Doe"}})
+      assert length(users) == 1
+      assert hd(users).id == jane.id
+    end
+
+    test "filters by name (full name)" do
+      jane =
+        %User{}
+        |> User.changeset(%{first_name: "Jane", last_name: "Doe"})
+        |> Repo.insert!()
+
+      assert {:ok, users} = Users.list_users(%{filter: %{by_name: "Jane Doe"}})
+      assert length(users) == 1
+      assert hd(users).id == jane.id
+    end
+
+    test "name filter is case insensitive" do
+      jane =
+        %User{}
+        |> User.changeset(%{first_name: "Jane", last_name: "Doe"})
+        |> Repo.insert!()
+
+      assert {:ok, users} = Users.list_users(%{filter: %{by_name: "jane"}})
+      assert length(users) == 1
+      assert hd(users).id == jane.id
+    end
+
     test "returns {:error, _} when repo raises" do
       original = Application.get_env(:turbo_octo_pancakes, :repo)
       Application.put_env(:turbo_octo_pancakes, :repo, FakeFailingRepo)

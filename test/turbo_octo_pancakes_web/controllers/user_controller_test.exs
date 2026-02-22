@@ -24,6 +24,26 @@ defmodule TurboOctoPancakesWeb.UserControllerTest do
              }
     end
 
+    test "passes name param to context and returns filtered result", %{conn: conn} do
+      conn = get(conn, ~p"/users?name=alice")
+
+      assert json_response(conn, 200) == %{
+               "users" => [
+                 %{"id" => "filtered-id", "first_name" => "Alice", "last_name" => "Filtered"}
+               ]
+             }
+    end
+
+    test "passes name param (trimmed) to context and returns filtered result", %{conn: conn} do
+      conn = get(conn, ~p"/users?name=%20alice")
+
+      assert json_response(conn, 200) == %{
+               "users" => [
+                 %{"id" => "filtered-id", "first_name" => "Alice", "last_name" => "Filtered"}
+               ]
+             }
+    end
+
     test "returns 500 and error JSON when context returns error", %{conn: conn} do
       Application.put_env(
         :turbo_octo_pancakes,
@@ -67,12 +87,43 @@ defmodule TurboOctoPancakesWeb.UserControllerTest do
       assert first["id"] == u2.id
       assert second["id"] == u1.id
     end
+
+    test "filters by name query param", %{conn: conn} do
+      %User{}
+      |> User.changeset(%{first_name: "Other", last_name: "User"})
+      |> Repo.insert!()
+
+      jane =
+        %User{}
+        |> User.changeset(%{first_name: "Jane", last_name: "Doe"})
+        |> Repo.insert!()
+
+      conn = get(conn, ~p"/users?name=Jane")
+      body = json_response(conn, 200)
+      assert %{"users" => [user]} = body
+      assert user["id"] == jane.id
+      assert user["first_name"] == "Jane"
+      assert user["last_name"] == "Doe"
+    end
   end
 
   defmodule MockUsersSuccess do
     @behaviour TurboOctoPancakes.Users.Behaviour
 
     @impl true
+    def list_users(%{filter: %{by_name: "alice"}}) do
+      {:ok,
+       [
+         %User{
+           id: "filtered-id",
+           first_name: "Alice",
+           last_name: "Filtered",
+           inserted_at: nil,
+           updated_at: nil
+         }
+       ]}
+    end
+
     def list_users(_opts) do
       {:ok,
        [
