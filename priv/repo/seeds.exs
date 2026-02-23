@@ -9,3 +9,50 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+Code.require_file("priv/repo/seeds/users.exs")
+
+defmodule Seeds do
+  alias TurboOctoPancakes.Repo
+
+  def run do
+    IO.puts("=== Starting database seeding ===\n")
+
+    init_context()
+    |> seed_users()
+    |> handle_result()
+  end
+
+  defp init_context do
+    case Repo.query("SELECT 1") do
+      {:ok, _} -> {:ok, %{}}
+      {:error, reason} -> {:error, {:db_connection, reason}}
+    end
+  end
+
+  defp seed_users({:error, _} = error), do: error
+
+  defp seed_users({:ok, context}) do
+    case Seeds.Users.run() do
+      {:ok, info} ->
+        IO.puts("")
+        {:ok, Map.put(context, :users, info)}
+
+      {:error, _} = error ->
+        error
+    end
+  end
+
+  defp handle_result({:ok, context}) do
+    IO.puts("\n=== Seeding complete ===")
+    IO.puts("  Users: #{context.users.total_inserted}")
+    :ok
+  end
+
+  defp handle_result({:error, reason}) do
+    IO.puts("\n=== Seeding failed: #{inspect(reason)} ===")
+    {:error, reason}
+  end
+end
+
+Seeds.run()
