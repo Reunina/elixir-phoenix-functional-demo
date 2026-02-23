@@ -60,6 +60,17 @@ config :logger, :default_formatter,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# Phoenix Swagger – generate priv/static/swagger.json from router and controller specs
+config :turbo_octo_pancakes, :phoenix_swagger,
+  swagger_files: %{
+    "priv/static/swagger.json" => [
+      router: TurboOctoPancakesWeb.Router,
+      endpoint: TurboOctoPancakesWeb.Endpoint
+    ]
+  }
+
+config :phoenix_swagger, :json_library, Jason
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

@@ -3,7 +3,7 @@
 Little Elixir-Phoenix app for training purposes
 
 
-To start your Phoenix server:
+## To start your Phoenix server:
 
 * Run `mix setup` to install and setup dependencies
 * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
@@ -11,6 +11,17 @@ To start your Phoenix server:
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+
+## Swagger 
+
+Using [swagger](https://swagger.io/) for api documentation and manual testing.
+
+to generate the swagger documentation  
+````
+mix phx.swagger.generate
+````
+
+Now you can visit [`localhost:4000/swagger/index/html`](http://localhost:4000/swagger/index.html#/Users) after running your project
 
 ## Learn more
 

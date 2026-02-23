@@ -1,0 +1,122 @@
+{
+  "info": {
+    "version": "1.0",
+    "title": "Turbo Octo Pancakes API"
+  },
+  "host": "localhost:4000",
+  "definitions": {
+    "User": {
+      "description": "A user in the system",
+      "example": {
+        "first_name": "Mock",
+        "id": "mock-id-1",
+        "last_name": "User"
+      },
+      "properties": {
+        "first_name": {
+          "description": "First name",
+          "type": "string"
+        },
+        "id": {
+          "description": "User ID",
+          "type": "string"
+        },
+        "last_name": {
+          "description": "Last name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "last_name",
+        "first_name",
+        "id"
+      ],
+      "title": "User",
+      "type": "object"
+    },
+    "ErrorObject": {
+      "properties": {
+        "message": {
+          "description": "Error message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "message"
+      ],
+      "title": "Error",
+      "type": "object"
+    },
+    "ErrorResponse": {
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/ErrorObject",
+          "description": "Error payload"
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "title": "Error response wrapper",
+      "type": "object"
+    },
+    "UsersIndexResponse": {
+      "properties": {
+        "users": {
+          "description": "List of users",
+          "items": {
+            "$ref": "#/definitions/User"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "users"
+      ],
+      "title": "Users index response",
+      "type": "object"
+    }
+  },
+  "paths": {
+    "/users": {
+      "get": {
+        "description": "Returns all users ordered by full name (first_name then last_name).",
+        "operationId": "TurboOctoPancakesWeb.UserController.index",
+        "parameters": [
+          {
+            "description": "Filter users by first name, last name, or full name (case-insensitive)",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/UsersIndexResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "summary": "List users",
+        "tags": [
+          "Users"
+        ]
+      }
+    }
+  },
+  "swagger": "2.0",
+  "tags": [
+    {
+      "name": "Users",
+      "description": "List and filter users"
+    }
+  ]
+}

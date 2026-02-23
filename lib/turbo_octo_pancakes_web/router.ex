@@ -14,6 +14,20 @@ defmodule TurboOctoPancakesWeb.Router do
     plug :accepts, ["json"]
   end
 
+  # No CSRF – Swagger UI loads JS/CSS from CDN; protect_from_forgery would block those requests
+  pipeline :swagger_ui do
+    plug :accepts, ["html"]
+  end
+
+  # Swagger UI – serve interactive API docs at /swagger
+  scope "/swagger" do
+    pipe_through :swagger_ui
+
+    forward "/", PhoenixSwagger.Plug.SwaggerUI,
+      otp_app: :turbo_octo_pancakes,
+      swagger_file: "swagger.json"
+  end
+
   scope "/", TurboOctoPancakesWeb do
     pipe_through :browser
 
@@ -46,5 +60,17 @@ defmodule TurboOctoPancakesWeb.Router do
       live_dashboard "/dashboard", metrics: TurboOctoPancakesWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
+  end
+
+  def swagger_info do
+    %{
+      info: %{
+        version: "1.0",
+        title: "Turbo Octo Pancakes API"
+      },
+      tags: [
+        %{name: "Users", description: "List and filter users"}
+      ]
+    }
   end
 end
