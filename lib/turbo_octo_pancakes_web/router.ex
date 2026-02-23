@@ -20,6 +20,12 @@ defmodule TurboOctoPancakesWeb.Router do
     get "/", PageController, :home
   end
 
+  scope "/users", TurboOctoPancakesWeb do
+    pipe_through :api
+
+    get "/", UserController, :index
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", TurboOctoPancakesWeb do
   #   pipe_through :api
