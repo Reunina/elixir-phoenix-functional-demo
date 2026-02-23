@@ -12,6 +12,7 @@
 
 Code.require_file("priv/repo/seeds/users.exs")
 Code.require_file("priv/repo/seeds/currencies.exs")
+Code.require_file("priv/repo/seeds/products.exs")
 
 defmodule Seeds do
   alias TurboOctoPancakes.Repo
@@ -22,6 +23,7 @@ defmodule Seeds do
     init_context()
     |> seed_users()
     |> seed_currencies()
+    |> seed_products()
     |> handle_result()
   end
 
@@ -56,12 +58,25 @@ defmodule Seeds do
         error
     end
   end
+  defp seed_products({:error, _} = error), do: error
+
+  defp seed_products({:ok, context}) do
+    case Seeds.Products.run() do
+      {:ok, info} ->
+        IO.puts("")
+        {:ok, Map.put(context, :products, info)}
+
+      {:error, _} = error ->
+        error
+    end
+  end
 
 
   defp handle_result({:ok, context}) do
     IO.puts("\n=== Seeding complete ===")
     IO.puts("  Users: #{context.users.total_inserted}")
     IO.puts("  Currencies: #{context.currencies.total_inserted}")
+    IO.puts("  products: #{context.products.total_inserted}")
     :ok
   end
 

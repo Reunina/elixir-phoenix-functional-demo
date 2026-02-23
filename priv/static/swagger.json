@@ -34,32 +34,6 @@
       "title": "User",
       "type": "object"
     },
-    "ErrorObject": {
-      "properties": {
-        "message": {
-          "description": "Error message",
-          "type": "string"
-        }
-      },
-      "required": [
-        "message"
-      ],
-      "title": "Error",
-      "type": "object"
-    },
-    "ErrorResponse": {
-      "properties": {
-        "error": {
-          "$ref": "#/definitions/ErrorObject",
-          "description": "Error payload"
-        }
-      },
-      "required": [
-        "error"
-      ],
-      "title": "Error response wrapper",
-      "type": "object"
-    },
     "UsersIndexResponse": {
       "properties": {
         "users": {
@@ -75,8 +49,40 @@
       ],
       "title": "Users index response",
       "type": "object"
+    },
+    "ErrorResponse": {
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/ErrorObject",
+          "description": "Error payload"
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "title": "Error response wrapper",
+      "type": "object"
+    },
+    "ErrorObject": {
+      "properties": {
+        "message": {
+          "description": "Error message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "message"
+      ],
+      "title": "Error",
+      "type": "object"
     }
   },
+  "tags": [
+    {
+      "name": "Users",
+      "description": "List and filter users"
+    }
+  ],
   "paths": {
     "/users": {
       "get": {
@@ -112,11 +118,5 @@
       }
     }
   },
-  "swagger": "2.0",
-  "tags": [
-    {
-      "name": "Users",
-      "description": "List and filter users"
-    }
-  ]
+  "swagger": "2.0"
 }
