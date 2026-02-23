@@ -3,6 +3,8 @@ defmodule TurboOctoPancakes.UsersTest do
 
   alias TurboOctoPancakes.Users
   alias TurboOctoPancakes.Users.User
+  alias TurboOctoPancakes.Users.Product
+  alias TurboOctoPancakes.Users.Currency
   alias TurboOctoPancakes.Repo
 
   describe "list_users/1" do
@@ -96,6 +98,35 @@ defmodule TurboOctoPancakes.UsersTest do
       end)
 
       assert {:error, _} = Users.list_users()
+    end
+
+    test "preloads products for each user" do
+      %Currency{}
+      |> Currency.changeset(%{code: "USD"})
+      |> Repo.insert!()
+
+      user =
+        %User{}
+        |> User.changeset(%{first_name: "Jane", last_name: "Doe"})
+        |> Repo.insert!()
+
+      %Product{}
+      |> Product.changeset(%{
+        user_id: user.id,
+        currency_code: "USD",
+        price: 100,
+        stock: 2,
+        label: "Label",
+        start_date: DateTime.utc_now()
+      })
+      |> Repo.insert!()
+
+      assert {:ok, users} = Users.list_users()
+      assert length(users) == 1
+
+      [loaded_user] = users
+      assert loaded_user.id == user.id
+      assert match?([%Product{}], loaded_user.products)
     end
   end
 end

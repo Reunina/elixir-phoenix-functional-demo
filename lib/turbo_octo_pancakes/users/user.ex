@@ -6,10 +6,13 @@ defmodule TurboOctoPancakes.Users.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias TurboOctoPancakes.Users.Product
+
   @type t :: %__MODULE__{
           id: binary() | nil,
           first_name: String.t() | nil,
           last_name: String.t() | nil,
+          products: [Product.t()] | Ecto.Association.NotLoaded.t(),
           inserted_at: DateTime.t() | nil,
           updated_at: DateTime.t() | nil
         }
@@ -19,6 +22,8 @@ defmodule TurboOctoPancakes.Users.User do
   schema "users" do
     field :first_name, :string
     field :last_name, :string
+
+    has_many :products, Product
 
     timestamps(type: :utc_datetime_usec)
   end
