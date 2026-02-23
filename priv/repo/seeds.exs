@@ -11,6 +11,7 @@
 # and so on) as they will fail if something goes wrong.
 
 Code.require_file("priv/repo/seeds/users.exs")
+Code.require_file("priv/repo/seeds/currencies.exs")
 
 defmodule Seeds do
   alias TurboOctoPancakes.Repo
@@ -20,6 +21,7 @@ defmodule Seeds do
 
     init_context()
     |> seed_users()
+    |> seed_currencies()
     |> handle_result()
   end
 
@@ -42,10 +44,24 @@ defmodule Seeds do
         error
     end
   end
+  defp seed_currencies({:error, _} = error), do: error
+
+  defp seed_currencies({:ok, context}) do
+    case Seeds.Currencies.run() do
+      {:ok, info} ->
+        IO.puts("")
+        {:ok, Map.put(context, :currencies, info)}
+
+      {:error, _} = error ->
+        error
+    end
+  end
+
 
   defp handle_result({:ok, context}) do
     IO.puts("\n=== Seeding complete ===")
     IO.puts("  Users: #{context.users.total_inserted}")
+    IO.puts("  Currencies: #{context.currencies.total_inserted}")
     :ok
   end
 
