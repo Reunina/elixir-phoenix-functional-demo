@@ -4,6 +4,7 @@ defmodule TurboOctoPancakesWeb.UserController do
 
   alias PhoenixSwagger.Schema
   alias TurboOctoPancakesWeb.UserJSON
+  alias TurboOctoPancakes.FakeMailer
 
   swagger_path :index do
     get("/users")
@@ -37,6 +38,16 @@ defmodule TurboOctoPancakesWeb.UserController do
     response(500, "Internal server error", Schema.ref(:ErrorResponse))
   end
 
+  swagger_path :invite_users do
+    post("/users/invite-users")
+    summary("Invite users with active products")
+    description("Sends emails to all users that currently have at least one active product.")
+    tag("Users")
+
+    response(202, "Accepted")
+    response(500, "Internal server error", Schema.ref(:ErrorResponse))
+  end
+
   def index(conn, params) do
     opts =
       %{}
@@ -49,6 +60,37 @@ defmodule TurboOctoPancakesWeb.UserController do
         conn
         |> put_status(:ok)
         |> json(UserJSON.index(%{users: users}))
+
+      {:error, _reason} ->
+        conn
+        |> put_status(:internal_server_error)
+        |> json(UserJSON.error(%{message: "Internal server error"}))
+    end
+  end
+
+  def invite_users(conn, _params) do
+    opts = %{filter: %{has_active_product: true}}
+
+    case users_context().list_users(opts) do
+      {:ok, users} ->
+        ids = Enum.map(users, & &1.id)
+
+        recipients =
+          Enum.map(users, fn user ->
+            %{name: "#{user.first_name} #{user.last_name}"}
+          end)
+
+        # fire and forget
+        Task.start(fn -> FakeMailer.send_emails(recipients) end)
+
+        conn
+        |> put_status(:accepted)
+        |> json(%{
+          invited_users: %{
+            count: length(ids),
+            ids: ids
+          }
+        })
 
       {:error, _reason} ->
         conn

@@ -88,6 +88,28 @@ defmodule TurboOctoPancakesWeb.UserControllerTest do
     end
   end
 
+  describe "POST /users/invite-users (unit: with mock context)" do
+    @describetag :unit
+
+    setup do
+      mock = TurboOctoPancakesWeb.UserControllerTest.MockUsersSuccess
+      Application.put_env(:turbo_octo_pancakes, :users_context, mock)
+      on_exit(fn -> Application.delete_env(:turbo_octo_pancakes, :users_context) end)
+      :ok
+    end
+
+    test "returns 202 and invited users payload with ids", %{conn: conn} do
+      conn = post(conn, ~p"/users/invite-users")
+
+      assert json_response(conn, 202) == %{
+               "invited_users" => %{
+                 "count" => 1,
+                 "ids" => ["active-product-id"]
+               }
+             }
+    end
+  end
+
   describe "GET /users (integration: real context and DB)" do
     @describetag :integration
 

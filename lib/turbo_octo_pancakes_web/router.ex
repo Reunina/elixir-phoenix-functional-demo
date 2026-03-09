@@ -38,6 +38,7 @@ defmodule TurboOctoPancakesWeb.Router do
     pipe_through :api
 
     get "/", UserController, :index
+    post "/invite-users", UserController, :invite_users
   end
 
   # Other scopes may use custom stacks.

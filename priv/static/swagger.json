@@ -5,18 +5,47 @@
   },
   "host": "localhost:4000",
   "definitions": {
+    "UsersIndexResponse": {
+      "properties": {
+        "users": {
+          "description": "List of users",
+          "items": {
+            "$ref": "#/definitions/User"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "users"
+      ],
+      "title": "Users index response",
+      "type": "object"
+    },
+    "ErrorResponse": {
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/ErrorObject",
+          "description": "Error payload"
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "title": "Error response wrapper",
+      "type": "object"
+    },
     "User": {
       "description": "A user in the system",
       "example": {
         "first_name": "Mock",
         "id": "mock-id-1",
         "last_name": "User",
-        "proucts": [
+        "products": [
           {
             "amount": 100000,
             "currency": "USD",
-            "id": "prouct-id-1",
-            "label": "Base prouct",
+            "id": "product-id-1",
+            "label": "Base product",
             "start_date": "2025-01-01T00:00:00Z",
             "stock": 0
           }
@@ -35,8 +64,8 @@
           "description": "Last name",
           "type": "string"
         },
-        "proucts": {
-          "description": "List of user proucts",
+        "products": {
+          "description": "List of user products",
           "items": {
             "$ref": "#/definitions/Product"
           },
@@ -44,7 +73,7 @@
         }
       },
       "required": [
-        "proucts",
+        "products",
         "last_name",
         "first_name",
         "id"
@@ -95,35 +124,6 @@
       "title": "Product",
       "type": "object"
     },
-    "UsersIndexResponse": {
-      "properties": {
-        "users": {
-          "description": "List of users",
-          "items": {
-            "$ref": "#/definitions/User"
-          },
-          "type": "array"
-        }
-      },
-      "required": [
-        "users"
-      ],
-      "title": "Users index response",
-      "type": "object"
-    },
-    "ErrorResponse": {
-      "properties": {
-        "error": {
-          "$ref": "#/definitions/ErrorObject",
-          "description": "Error payload"
-        }
-      },
-      "required": [
-        "error"
-      ],
-      "title": "Error response wrapper",
-      "type": "object"
-    },
     "ErrorObject": {
       "properties": {
         "message": {
@@ -147,7 +147,7 @@
   "paths": {
     "/users": {
       "get": {
-        "description": "Returns all users ordered by full name (first_name then last_name).",
+        "description": "Returns all users ordered by full name (first_name then last_name), optionally filtered by name and whether they have active products.",
         "operationId": "TurboOctoPancakesWeb.UserController.index",
         "parameters": [
           {
@@ -156,6 +156,13 @@
             "name": "name",
             "required": false,
             "type": "string"
+          },
+          {
+            "description": "Filter users by whether they have at least one active product. Use true for only users with active products and false for users without active products.",
+            "in": "query",
+            "name": "has_active_product",
+            "required": false,
+            "type": "boolean"
           }
         ],
         "responses": {
@@ -173,6 +180,28 @@
           }
         },
         "summary": "List users",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/invite-users": {
+      "post": {
+        "description": "Sends emails to all users that currently have at least one active product.",
+        "operationId": "TurboOctoPancakesWeb.UserController.invite_users",
+        "parameters": [],
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "summary": "Invite users with active products",
         "tags": [
           "Users"
         ]
