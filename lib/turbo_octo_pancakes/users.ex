@@ -18,6 +18,7 @@ defmodule TurboOctoPancakes.Users do
 
   alias TurboOctoPancakes.Repo
   alias TurboOctoPancakes.Users.User
+  alias TurboOctoPancakes.Users.Product
 
   @behaviour TurboOctoPancakes.Users.Behaviour
 
@@ -47,6 +48,7 @@ defmodule TurboOctoPancakes.Users do
   defp load_products(users) do
     repo().preload(users, products: [:currency])
   end
+
   defp init(ctx, opts) do
     ctx
     |> Map.put(:query, User)
@@ -71,8 +73,14 @@ defmodule TurboOctoPancakes.Users do
 
     updated_query =
       Enum.reduce(filters, query, fn
-        {:by_name, name}, acc_query -> filter_by_name(acc_query, name)
-        _, acc_query -> acc_query
+        {:by_name, name}, acc_query ->
+          filter_by_name(acc_query, name)
+
+        {:has_active_product, flag}, acc_query ->
+          filter_by_has_active_product(acc_query, flag)
+
+        _, acc_query ->
+          acc_query
       end)
 
     Map.put(ctx, :query, updated_query)
@@ -86,5 +94,26 @@ defmodule TurboOctoPancakes.Users do
         ilike(u.first_name, ^search_term) or
           ilike(u.last_name, ^search_term) or
           ilike(fragment("? || ' ' || ?", u.first_name, u.last_name), ^search_term)
+  end
+
+  defp filter_by_has_active_product(query, true) do
+    from u in query,
+      join: p in Product,
+      on:
+        p.user_id == u.id and
+          p.start_date <= fragment("now() AT TIME ZONE 'UTC'") and
+          (is_nil(p.end_date) or p.end_date >= fragment("now() AT TIME ZONE 'UTC'")),
+      distinct: u.id
+  end
+
+  defp filter_by_has_active_product(query, false) do
+    active_product_user_ids_query =
+      from p in Product,
+        where:
+          p.start_date <= fragment("now() AT TIME ZONE 'UTC'") and
+            (is_nil(p.end_date) or p.end_date >= fragment("now() AT TIME ZONE 'UTC'")),
+        select: p.user_id
+
+    from u in query, where: u.id not in subquery(active_product_user_ids_query)
   end
 end

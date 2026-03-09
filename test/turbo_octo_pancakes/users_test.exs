@@ -128,6 +128,59 @@ defmodule TurboOctoPancakes.UsersTest do
       assert loaded_user.id == user.id
       assert match?([%Product{}], loaded_user.products)
     end
+
+    test "filters by has_active_product=true based on end_date" do
+      %Currency{}
+      |> Currency.changeset(%{code: "USD"})
+      |> Repo.insert!()
+
+      no_products_user =
+        %User{}
+        |> User.changeset(%{first_name: "No", last_name: "Products"})
+        |> Repo.insert!()
+
+      only_ended_user =
+        %User{}
+        |> User.changeset(%{first_name: "Only", last_name: "Ended"})
+        |> Repo.insert!()
+
+      active_user =
+        %User{}
+        |> User.changeset(%{first_name: "Has", last_name: "Active"})
+        |> Repo.insert!()
+
+      now = DateTime.utc_now()
+      past = DateTime.add(now, -86_400, :second)
+
+      %Product{}
+      |> Product.changeset(%{
+        user_id: only_ended_user.id,
+        currency_code: "USD",
+        price: 100,
+        stock: 1,
+        label: "Ended",
+        start_date: past,
+        end_date: past
+      })
+      |> Repo.insert!()
+
+      %Product{}
+      |> Product.changeset(%{
+        user_id: active_user.id,
+        currency_code: "USD",
+        price: 100,
+        stock: 1,
+        label: "Active",
+        start_date: now,
+        end_date: nil
+      })
+      |> Repo.insert!()
+
+      assert {:ok, users} = Users.list_users(%{filter: %{has_active_product: true}})
+      assert Enum.map(users, & &1.id) == [active_user.id]
+      refute no_products_user.id in Enum.map(users, & &1.id)
+      refute only_ended_user.id in Enum.map(users, & &1.id)
+    end
   end
 end
 

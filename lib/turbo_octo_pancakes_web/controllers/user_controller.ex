@@ -8,14 +8,29 @@ defmodule TurboOctoPancakesWeb.UserController do
   swagger_path :index do
     get("/users")
     summary("List users")
-    description("Returns all users ordered by full name (first_name then last_name).")
+
+    description(
+      "Returns all users ordered by full name (first_name then last_name), " <>
+        "optionally filtered by name and whether they have active products."
+    )
+
     tag("Users")
 
     parameters do
       name(
         :query,
         :string,
-        "Filter users by first name, last name, or full name (case-insensitive)", required: false)
+        "Filter users by first name, last name, or full name (case-insensitive)",
+        required: false
+      )
+
+      has_active_product(
+        :query,
+        :boolean,
+        "Filter users by whether they have at least one active product. " <>
+          "Use true for only users with active products and false for users without active products.",
+        required: false
+      )
     end
 
     response(200, "OK", Schema.ref(:UsersIndexResponse))
@@ -26,6 +41,7 @@ defmodule TurboOctoPancakesWeb.UserController do
     opts =
       %{}
       |> add_filter(:name, params["name"])
+      |> add_filter(:has_active_product, params["has_active_product"])
       |> add_order(order_by: :by_name)
 
     case users_context().list_users(opts) do
@@ -42,12 +58,37 @@ defmodule TurboOctoPancakesWeb.UserController do
   end
 
   defp add_filter(opts, :name, nil), do: opts
+
   defp add_filter(opts, :name, ""), do: opts
 
   defp add_filter(opts, :name, value) when is_binary(value),
-    do: Map.put(opts, :filter, %{by_name: String.trim(value)})
+    do: put_filter(opts, :by_name, String.trim(value))
+
+  defp add_filter(opts, :has_active_product, nil), do: opts
+
+  defp add_filter(opts, :has_active_product, ""), do: opts
+
+  defp add_filter(opts, :has_active_product, value) when is_binary(value) do
+    case parse_boolean(value) do
+      nil -> opts
+      bool -> put_filter(opts, :has_active_product, bool)
+    end
+  end
 
   defp add_filter(opts, _key, _value), do: opts
+
+  defp put_filter(opts, key, value) do
+    filters = Map.get(opts, :filter, %{})
+    Map.put(opts, :filter, Map.put(filters, key, value))
+  end
+
+  defp parse_boolean(value) when is_binary(value) do
+    case String.downcase(String.trim(value)) do
+      "true" -> true
+      "false" -> false
+      _ -> nil
+    end
+  end
 
   defp add_order(opts, order_by: fields), do: Map.put(opts, :order, fields)
 
@@ -65,17 +106,17 @@ defmodule TurboOctoPancakesWeb.UserController do
             id(:string, "User ID", required: true)
             first_name(:string, "First name", required: true)
             last_name(:string, "Last name", required: true)
-            proucts(Schema.array(:Product), "List of user proucts", required: true)
+            products(Schema.array(:Product), "List of user products", required: true)
           end
 
           example(%{
             id: "mock-id-1",
             first_name: "Mock",
             last_name: "User",
-            proucts: [
+            products: [
               %{
-                id: "prouct-id-1",
-                label: "Base prouct",
+                id: "product-id-1",
+                label: "Base product",
                 amount: 100_000,
                 stock: 0,
                 currency: "USD",

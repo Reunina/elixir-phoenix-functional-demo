@@ -19,7 +19,12 @@ defmodule TurboOctoPancakesWeb.UserControllerTest do
 
       assert json_response(conn, 200) == %{
                "users" => [
-                 %{"id" => "mock-id-1", "first_name" => "Mock", "last_name" => "User"}
+                 %{
+                   "id" => "mock-id-1",
+                   "first_name" => "Mock",
+                   "last_name" => "User",
+                   "products" => []
+                 }
                ]
              }
     end
@@ -29,7 +34,12 @@ defmodule TurboOctoPancakesWeb.UserControllerTest do
 
       assert json_response(conn, 200) == %{
                "users" => [
-                 %{"id" => "filtered-id", "first_name" => "Alice", "last_name" => "Filtered"}
+                 %{
+                   "id" => "filtered-id",
+                   "first_name" => "Alice",
+                   "last_name" => "Filtered",
+                   "products" => []
+                 }
                ]
              }
     end
@@ -39,7 +49,12 @@ defmodule TurboOctoPancakesWeb.UserControllerTest do
 
       assert json_response(conn, 200) == %{
                "users" => [
-                 %{"id" => "filtered-id", "first_name" => "Alice", "last_name" => "Filtered"}
+                 %{
+                   "id" => "filtered-id",
+                   "first_name" => "Alice",
+                   "last_name" => "Filtered",
+                   "products" => []
+                 }
                ]
              }
     end
@@ -54,7 +69,8 @@ defmodule TurboOctoPancakesWeb.UserControllerTest do
                  %{
                    "id" => "active-product-id",
                    "first_name" => "Has",
-                   "last_name" => "ActiveProduct"
+                   "last_name" => "ActiveProduct",
+                   "products" => []
                  }
                ]
              }
@@ -102,6 +118,8 @@ defmodule TurboOctoPancakesWeb.UserControllerTest do
       assert second["last_name"] == "Alpha"
       assert first["id"] == u2.id
       assert second["id"] == u1.id
+      assert first["products"] == []
+      assert second["products"] == []
     end
 
     test "filters by name query param", %{conn: conn} do
@@ -120,6 +138,7 @@ defmodule TurboOctoPancakesWeb.UserControllerTest do
       assert user["id"] == jane.id
       assert user["first_name"] == "Jane"
       assert user["last_name"] == "Doe"
+      assert user["products"] == []
     end
   end
 
