@@ -29,6 +29,7 @@ defmodule TurboOctoPancakes.Users do
       |> apply_filters()
       |> order_by()
       |> repo_all()
+      |> load_products()
 
     {:ok, users}
   rescue
@@ -43,6 +44,9 @@ defmodule TurboOctoPancakes.Users do
       |> Map.get(:query)
       |> repo().all()
 
+  defp load_products(users) do
+    repo().preload(users, products: [:currency])
+  end
   defp init(ctx, opts) do
     ctx
     |> Map.put(:query, User)

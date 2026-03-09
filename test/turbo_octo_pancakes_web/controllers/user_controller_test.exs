@@ -44,6 +44,22 @@ defmodule TurboOctoPancakesWeb.UserControllerTest do
              }
     end
 
+    test "passes has_active_product=true param to context and returns filtered result", %{
+      conn: conn
+    } do
+      conn = get(conn, ~p"/users?has_active_product=true")
+
+      assert json_response(conn, 200) == %{
+               "users" => [
+                 %{
+                   "id" => "active-product-id",
+                   "first_name" => "Has",
+                   "last_name" => "ActiveProduct"
+                 }
+               ]
+             }
+    end
+
     test "returns 500 and error JSON when context returns error", %{conn: conn} do
       Application.put_env(
         :turbo_octo_pancakes,
@@ -118,6 +134,19 @@ defmodule TurboOctoPancakesWeb.UserControllerTest do
            id: "filtered-id",
            first_name: "Alice",
            last_name: "Filtered",
+           inserted_at: nil,
+           updated_at: nil
+         }
+       ]}
+    end
+
+    def list_users(%{filter: %{has_active_product: true}}) do
+      {:ok,
+       [
+         %User{
+           id: "active-product-id",
+           first_name: "Has",
+           last_name: "ActiveProduct",
            inserted_at: nil,
            updated_at: nil
          }

@@ -12,7 +12,10 @@ defmodule TurboOctoPancakesWeb.UserController do
     tag("Users")
 
     parameters do
-      name(:query, :string, "Filter users by first name, last name, or full name (case-insensitive)", required: false)
+      name(
+        :query,
+        :string,
+        "Filter users by first name, last name, or full name (case-insensitive)", required: false)
     end
 
     response(200, "OK", Schema.ref(:UsersIndexResponse))
@@ -62,13 +65,40 @@ defmodule TurboOctoPancakesWeb.UserController do
             id(:string, "User ID", required: true)
             first_name(:string, "First name", required: true)
             last_name(:string, "Last name", required: true)
+            proucts(Schema.array(:Product), "List of user proucts", required: true)
           end
 
           example(%{
             id: "mock-id-1",
             first_name: "Mock",
-            last_name: "User"
+            last_name: "User",
+            proucts: [
+              %{
+                id: "prouct-id-1",
+                label: "Base prouct",
+                amount: 100_000,
+                stock: 0,
+                currency: "USD",
+                start_date: "2025-01-01T00:00:00Z",
+                end_date: nil
+              }
+            ]
           })
+        end,
+      Product:
+        swagger_schema do
+          title("Product")
+          description("A prouct entry for a user")
+
+          properties do
+            id(:string, "Product ID", required: true)
+            label(:string, "Product label", required: true)
+            amount(:integer, "Product amount in minor units (e.g. cents)", required: true)
+            stock(:integer, "Associated stock units", required: true)
+            currency(:string, "ISO 4217 currency code", required: true)
+            start_date(:string, "Start date (ISO8601)", required: true)
+            end_date(:string, "End date (ISO8601)", required: false)
+          end
         end,
       UsersIndexResponse:
         swagger_schema do

@@ -10,7 +10,17 @@
       "example": {
         "first_name": "Mock",
         "id": "mock-id-1",
-        "last_name": "User"
+        "last_name": "User",
+        "proucts": [
+          {
+            "amount": 100000,
+            "currency": "USD",
+            "id": "prouct-id-1",
+            "label": "Base prouct",
+            "start_date": "2025-01-01T00:00:00Z",
+            "stock": 0
+          }
+        ]
       },
       "properties": {
         "first_name": {
@@ -24,14 +34,65 @@
         "last_name": {
           "description": "Last name",
           "type": "string"
+        },
+        "proucts": {
+          "description": "List of user proucts",
+          "items": {
+            "$ref": "#/definitions/Product"
+          },
+          "type": "array"
         }
       },
       "required": [
+        "proucts",
         "last_name",
         "first_name",
         "id"
       ],
       "title": "User",
+      "type": "object"
+    },
+    "Product": {
+      "description": "A prouct entry for a user",
+      "properties": {
+        "amount": {
+          "description": "Product amount in minor units (e.g. cents)",
+          "type": "integer"
+        },
+        "currency": {
+          "description": "ISO 4217 currency code",
+          "type": "string"
+        },
+        "end_date": {
+          "description": "End date (ISO8601)",
+          "type": "string"
+        },
+        "id": {
+          "description": "Product ID",
+          "type": "string"
+        },
+        "label": {
+          "description": "Product label",
+          "type": "string"
+        },
+        "start_date": {
+          "description": "Start date (ISO8601)",
+          "type": "string"
+        },
+        "stock": {
+          "description": "Associated stock units",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "start_date",
+        "currency",
+        "stock",
+        "amount",
+        "label",
+        "id"
+      ],
+      "title": "Product",
       "type": "object"
     },
     "UsersIndexResponse": {
