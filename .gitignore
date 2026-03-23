@@ -35,3 +35,4 @@ elixir_phoenix_functional_demo-*.tar
 npm-debug.log
 /assets/node_modules/
 
+priv/static/swagger.json
