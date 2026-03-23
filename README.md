@@ -10,8 +10,16 @@ This project exposes a small user-oriented API and a home page.
 - Users can be filtered by:
   - `name` (matches first name, last name, or full name, case-insensitive)
   - `has_active_product` (`true`/`false`)
+- The `GET /users` endpoint supports pagination via:
+  - `page` (integer, default `1`)
+  - `per_page` (integer, default `20`)
+- The `GET /users` response includes:
+  - `users` (current page items)
+  - `pagination` (`page`, `per_page`, `total`, `total_pages`)
 - The `POST /users/invite-users` endpoint finds users with active products and triggers a background invitation workflow.
-- The response of the invite endpoint includes the number of invited users and their IDs.
+- The response of the invite endpoint includes invited user IDs and total:
+  - `invited_users.ids`
+  - `invited_users.total`
 - An interactive Swagger UI is available at `/swagger` for manual API exploration and testing.
 
 ## Technical description

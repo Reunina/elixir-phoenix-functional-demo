@@ -25,7 +25,13 @@ defmodule ElixirPhoenixFunctionalDemoWeb.UserControllerTest do
                    "last_name" => "User",
                    "products" => []
                  }
-               ]
+               ],
+               "pagination" => %{
+                 "page" => 1,
+                 "per_page" => 20,
+                 "total" => 1,
+                 "total_pages" => 1
+               }
              }
     end
 
@@ -40,7 +46,13 @@ defmodule ElixirPhoenixFunctionalDemoWeb.UserControllerTest do
                    "last_name" => "Filtered",
                    "products" => []
                  }
-               ]
+               ],
+               "pagination" => %{
+                 "page" => 1,
+                 "per_page" => 20,
+                 "total" => 1,
+                 "total_pages" => 1
+               }
              }
     end
 
@@ -55,7 +67,13 @@ defmodule ElixirPhoenixFunctionalDemoWeb.UserControllerTest do
                    "last_name" => "Filtered",
                    "products" => []
                  }
-               ]
+               ],
+               "pagination" => %{
+                 "page" => 1,
+                 "per_page" => 20,
+                 "total" => 1,
+                 "total_pages" => 1
+               }
              }
     end
 
@@ -72,7 +90,13 @@ defmodule ElixirPhoenixFunctionalDemoWeb.UserControllerTest do
                    "last_name" => "ActiveProduct",
                    "products" => []
                  }
-               ]
+               ],
+               "pagination" => %{
+                 "page" => 1,
+                 "per_page" => 20,
+                 "total" => 1,
+                 "total_pages" => 1
+               }
              }
     end
 
@@ -103,7 +127,7 @@ defmodule ElixirPhoenixFunctionalDemoWeb.UserControllerTest do
 
       assert json_response(conn, 202) == %{
                "invited_users" => %{
-                 "count" => 1,
+                 "total" => 1,
                  "ids" => ["active-product-id"]
                }
              }
@@ -115,7 +139,16 @@ defmodule ElixirPhoenixFunctionalDemoWeb.UserControllerTest do
 
     test "returns 200 and empty users when no users", %{conn: conn} do
       conn = get(conn, ~p"/users")
-      assert json_response(conn, 200) == %{"users" => []}
+
+      assert json_response(conn, 200) == %{
+               "users" => [],
+               "pagination" => %{
+                 "page" => 1,
+                 "per_page" => 20,
+                 "total" => 0,
+                 "total_pages" => 0
+               }
+             }
     end
 
     test "returns 200 and all users ordered by full name", %{conn: conn} do
@@ -131,8 +164,16 @@ defmodule ElixirPhoenixFunctionalDemoWeb.UserControllerTest do
 
       conn = get(conn, ~p"/users")
       body = json_response(conn, 200)
-      assert %{"users" => users} = body
+      assert %{"users" => users, "pagination" => pagination} = body
       assert length(users) == 2
+
+      assert pagination == %{
+               "page" => 1,
+               "per_page" => 20,
+               "total" => 2,
+               "total_pages" => 1
+             }
+
       [first, second] = users
       assert first["first_name"] == "Alice"
       assert first["last_name"] == "Beta"
@@ -156,11 +197,42 @@ defmodule ElixirPhoenixFunctionalDemoWeb.UserControllerTest do
 
       conn = get(conn, ~p"/users?name=Jane")
       body = json_response(conn, 200)
-      assert %{"users" => [user]} = body
+
+      assert %{
+               "users" => [user],
+               "pagination" => %{
+                 "page" => 1,
+                 "per_page" => 20,
+                 "total" => 1,
+                 "total_pages" => 1
+               }
+             } = body
+
       assert user["id"] == jane.id
       assert user["first_name"] == "Jane"
       assert user["last_name"] == "Doe"
       assert user["products"] == []
+    end
+
+    test "supports pagination params", %{conn: conn} do
+      %User{} |> User.changeset(%{first_name: "Anna", last_name: "Zero"}) |> Repo.insert!()
+      %User{} |> User.changeset(%{first_name: "Bella", last_name: "One"}) |> Repo.insert!()
+      %User{} |> User.changeset(%{first_name: "Cara", last_name: "Two"}) |> Repo.insert!()
+
+      conn = get(conn, ~p"/users?page=2&per_page=1")
+      body = json_response(conn, 200)
+
+      assert %{
+               "users" => [user],
+               "pagination" => %{
+                 "page" => 2,
+                 "per_page" => 1,
+                 "total" => 3,
+                 "total_pages" => 3
+               }
+             } = body
+
+      assert user["first_name"] == "Bella"
     end
   end
 

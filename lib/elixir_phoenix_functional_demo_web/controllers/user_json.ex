@@ -3,10 +3,22 @@ defmodule ElixirPhoenixFunctionalDemoWeb.UserJSON do
   JSON rendering for UserController responses.
   """
 
-  def index(%{users: users}) do
+  def index(%{users: users, pagination: pagination}) do
     now = DateTime.utc_now()
 
-    %{users: Enum.map(users, &user(&1, now))}
+    %{
+      users: Enum.map(users, &user(&1, now)),
+      pagination: pagination
+    }
+  end
+
+  def invite_users(%{ids: ids, total: total}) do
+    %{
+      invited_users: %{
+        total: total,
+        ids: ids
+      }
+    }
   end
 
   def error(%{message: message}) do

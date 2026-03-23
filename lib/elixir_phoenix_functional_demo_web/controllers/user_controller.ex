@@ -32,6 +32,9 @@ defmodule ElixirPhoenixFunctionalDemoWeb.UserController do
           "Use true for only users with active products and false for users without active products.",
         required: false
       )
+
+      page(:query, :integer, "Page number (>= 1). Defaults to 1.", required: false)
+      per_page(:query, :integer, "Page size (>= 1). Defaults to 20.", required: false)
     end
 
     response(200, "OK", Schema.ref(:UsersIndexResponse))
@@ -44,11 +47,13 @@ defmodule ElixirPhoenixFunctionalDemoWeb.UserController do
     description("Sends emails to all users that currently have at least one active product.")
     tag("Users")
 
-    response(202, "Accepted")
+    response(202, "Accepted", Schema.ref(:InvitedUsersResponse))
     response(500, "Internal server error", Schema.ref(:ErrorResponse))
   end
 
   def index(conn, params) do
+    pagination_params = parse_pagination_params(params)
+
     opts =
       %{}
       |> add_filter(:name, params["name"])
@@ -57,9 +62,11 @@ defmodule ElixirPhoenixFunctionalDemoWeb.UserController do
 
     case users_context().list_users(opts) do
       {:ok, users} ->
+        {paginated_users, pagination} = paginate(users, pagination_params)
+
         conn
         |> put_status(:ok)
-        |> json(UserJSON.index(%{users: users}))
+        |> json(UserJSON.index(%{users: paginated_users, pagination: pagination}))
 
       {:error, _reason} ->
         conn
@@ -74,6 +81,7 @@ defmodule ElixirPhoenixFunctionalDemoWeb.UserController do
     case users_context().list_users(opts) do
       {:ok, users} ->
         ids = Enum.map(users, & &1.id)
+        total = length(ids)
 
         recipients =
           Enum.map(users, fn user ->
@@ -85,12 +93,7 @@ defmodule ElixirPhoenixFunctionalDemoWeb.UserController do
 
         conn
         |> put_status(:accepted)
-        |> json(%{
-          invited_users: %{
-            count: length(ids),
-            ids: ids
-          }
-        })
+        |> json(UserJSON.invite_users(%{ids: ids, total: total}))
 
       {:error, _reason} ->
         conn
@@ -134,8 +137,49 @@ defmodule ElixirPhoenixFunctionalDemoWeb.UserController do
 
   defp add_order(opts, order_by: fields), do: Map.put(opts, :order, fields)
 
+  defp parse_pagination_params(params) do
+    %{
+      page: parse_positive_integer(Map.get(params, "page"), 1),
+      per_page: parse_positive_integer(Map.get(params, "per_page"), 20)
+    }
+  end
+
+  defp parse_positive_integer(nil, default), do: default
+  defp parse_positive_integer("", default), do: default
+
+  defp parse_positive_integer(value, default) when is_binary(value) do
+    case Integer.parse(String.trim(value)) do
+      {int, ""} when int > 0 -> int
+      _ -> default
+    end
+  end
+
+  defp parse_positive_integer(value, _default) when is_integer(value) and value > 0, do: value
+  defp parse_positive_integer(_value, default), do: default
+
+  defp paginate(items, %{page: page, per_page: per_page}) do
+    total = length(items)
+    offset = (page - 1) * per_page
+    total_pages = if total == 0, do: 0, else: div(total + per_page - 1, per_page)
+    page_items = items |> Enum.drop(offset) |> Enum.take(per_page)
+
+    pagination = %{
+      page: page,
+      per_page: per_page,
+      total: total,
+      total_pages: total_pages
+    }
+
+    {page_items, pagination}
+  end
+
   defp users_context,
-    do: Application.get_env(:elixir_phoenix_functional_demo, :users_context, ElixirPhoenixFunctionalDemo.Users)
+    do:
+      Application.get_env(
+        :elixir_phoenix_functional_demo,
+        :users_context,
+        ElixirPhoenixFunctionalDemo.Users
+      )
 
   def swagger_definitions do
     %{
@@ -189,6 +233,35 @@ defmodule ElixirPhoenixFunctionalDemoWeb.UserController do
 
           properties do
             users(Schema.array(:User), "List of users", required: true)
+            pagination(Schema.ref(:Pagination), "Pagination metadata", required: true)
+          end
+        end,
+      InvitedUsersResponse:
+        swagger_schema do
+          title("Invite users response")
+
+          properties do
+            invited_users(Schema.ref(:InvitedUsers), "Invited users payload", required: true)
+          end
+        end,
+      InvitedUsers:
+        swagger_schema do
+          title("Invited users")
+
+          properties do
+            total(:integer, "Total invited users matching the filter", required: true)
+            ids(Schema.array(:string), "Invited user IDs", required: true)
+          end
+        end,
+      Pagination:
+        swagger_schema do
+          title("Pagination metadata")
+
+          properties do
+            page(:integer, "Current page number", required: true)
+            per_page(:integer, "Page size", required: true)
+            total(:integer, "Total elements matching the filter", required: true)
+            total_pages(:integer, "Total pages available", required: true)
           end
         end,
       ErrorResponse:
