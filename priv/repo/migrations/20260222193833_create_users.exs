@@ -1,4 +1,4 @@
-defmodule TurboOctoPancakes.Repo.Migrations.CreateUsers do
+defmodule ElixirPhoenixFunctionalDemo.Repo.Migrations.CreateUsers do
   use Ecto.Migration
 
   def up do

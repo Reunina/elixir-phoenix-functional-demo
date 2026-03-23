@@ -1,4 +1,4 @@
-# TurboOctoPancakes
+# ElixirPhoenixFunctionalDemo
 
 Little Elixir-Phoenix app for training purposes
 
@@ -16,12 +16,12 @@ This project exposes a small user-oriented API and a home page.
 
 ## Technical description
 
-TurboOctoPancakes is a Phoenix `1.8` application written in Elixir (`~> 1.15`) with a PostgreSQL persistence layer via Ecto.
+ElixirPhoenixFunctionalDemo is a Phoenix `1.8` application written in Elixir (`~> 1.15`) with a PostgreSQL persistence layer via Ecto.
 
 - **Web layer:** Phoenix router/controller architecture with JSON APIs under `/users` and an HTML home route at `/`.
 - **API documentation:** `phoenix_swagger` is used to describe endpoints and schemas, and the generated docs are served through `PhoenixSwagger.Plug.SwaggerUI`.
-- **Domain behavior:** `TurboOctoPancakesWeb.UserController` builds filter/order options and delegates user retrieval to a configurable users context (`:users_context`, defaulting to `TurboOctoPancakes.Users`).
-- **Asynchronous work:** the invitation endpoint starts a background task (`Task.start/1`) and dispatches fake emails through `TurboOctoPancakes.FakeMailer`.
+- **Domain behavior:** `ElixirPhoenixFunctionalDemoWeb.UserController` builds filter/order options and delegates user retrieval to a configurable users context (`:users_context`, defaulting to `ElixirPhoenixFunctionalDemo.Users`).
+- **Asynchronous work:** the invitation endpoint starts a background task (`Task.start/1`) and dispatches fake emails through `ElixirPhoenixFunctionalDemo.FakeMailer`.
 - **Tooling and assets:** Tailwind CSS + esbuild for frontend assets, Bandit as the HTTP server, and a `mix precommit` alias for compile/format/test checks.
 
 ## To start your Phoenix server:

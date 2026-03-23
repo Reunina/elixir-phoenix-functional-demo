@@ -1,9 +1,9 @@
-defmodule TurboOctoPancakes.MixProject do
+defmodule ElixirPhoenixFunctionalDemo.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :turbo_octo_pancakes,
+      app: :elixir_phoenix_functional_demo,
       version: "0.1.0",
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -20,7 +20,7 @@ defmodule TurboOctoPancakes.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {TurboOctoPancakes.Application, []},
+      mod: {ElixirPhoenixFunctionalDemo.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -83,10 +83,10 @@ defmodule TurboOctoPancakes.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["compile", "tailwind turbo_octo_pancakes", "esbuild turbo_octo_pancakes"],
+      "assets.build": ["compile", "tailwind elixir_phoenix_functional_demo", "esbuild elixir_phoenix_functional_demo"],
       "assets.deploy": [
-        "tailwind turbo_octo_pancakes --minify",
-        "esbuild turbo_octo_pancakes --minify",
+        "tailwind elixir_phoenix_functional_demo --minify",
+        "esbuild elixir_phoenix_functional_demo --minify",
         "phx.digest"
       ],
       precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]

@@ -1,4 +1,4 @@
-defmodule TurboOctoPancakes.Repo.Migrations.CreateCurrencies do
+defmodule ElixirPhoenixFunctionalDemo.Repo.Migrations.CreateCurrencies do
   use Ecto.Migration
 
   def up do

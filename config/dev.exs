@@ -1,11 +1,11 @@
 import Config
 
 # Configure your database
-config :turbo_octo_pancakes, TurboOctoPancakes.Repo,
+config :elixir_phoenix_functional_demo, ElixirPhoenixFunctionalDemo.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
-  database: "turbo_octo_pancakes_dev",
+  database: "elixir_phoenix_functional_demo_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -16,7 +16,7 @@ config :turbo_octo_pancakes, TurboOctoPancakes.Repo,
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
-config :turbo_octo_pancakes, TurboOctoPancakesWeb.Endpoint,
+config :elixir_phoenix_functional_demo, ElixirPhoenixFunctionalDemoWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {127, 0, 0, 1}],
@@ -25,8 +25,8 @@ config :turbo_octo_pancakes, TurboOctoPancakesWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "XSvtZJwqMqHzpo4k+4Co7n4kVXG0W5PwcCiyAZBYkXN76bVp6YcFJrCyftVoE6aB",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:turbo_octo_pancakes, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:turbo_octo_pancakes, ~w(--watch)]}
+    esbuild: {Esbuild, :install_and_run, [:elixir_phoenix_functional_demo, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:elixir_phoenix_functional_demo, ~w(--watch)]}
   ]
 
 # ## SSL Support
@@ -53,7 +53,7 @@ config :turbo_octo_pancakes, TurboOctoPancakesWeb.Endpoint,
 # different ports.
 
 # Reload browser tabs when matching files change.
-config :turbo_octo_pancakes, TurboOctoPancakesWeb.Endpoint,
+config :elixir_phoenix_functional_demo, ElixirPhoenixFunctionalDemoWeb.Endpoint,
   live_reload: [
     web_console_logger: true,
     patterns: [
@@ -62,13 +62,13 @@ config :turbo_octo_pancakes, TurboOctoPancakesWeb.Endpoint,
       # Gettext translations
       ~r"priv/gettext/.*\.po$"E,
       # Router, Controllers, LiveViews and LiveComponents
-      ~r"lib/turbo_octo_pancakes_web/router\.ex$"E,
-      ~r"lib/turbo_octo_pancakes_web/(controllers|live|components)/.*\.(ex|heex)$"E
+      ~r"lib/elixir_phoenix_functional_demo_web/router\.ex$"E,
+      ~r"lib/elixir_phoenix_functional_demo_web/(controllers|live|components)/.*\.(ex|heex)$"E
     ]
   ]
 
 # Enable dev routes for dashboard and mailbox
-config :turbo_octo_pancakes, dev_routes: true
+config :elixir_phoenix_functional_demo, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"

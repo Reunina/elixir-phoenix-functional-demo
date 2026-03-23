@@ -7,19 +7,19 @@
 # General application configuration
 import Config
 
-config :turbo_octo_pancakes,
-  ecto_repos: [TurboOctoPancakes.Repo],
+config :elixir_phoenix_functional_demo,
+  ecto_repos: [ElixirPhoenixFunctionalDemo.Repo],
   generators: [timestamp_type: :utc_datetime]
 
 # Configure the endpoint
-config :turbo_octo_pancakes, TurboOctoPancakesWeb.Endpoint,
+config :elixir_phoenix_functional_demo, ElixirPhoenixFunctionalDemoWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
-    formats: [html: TurboOctoPancakesWeb.ErrorHTML, json: TurboOctoPancakesWeb.ErrorJSON],
+    formats: [html: ElixirPhoenixFunctionalDemoWeb.ErrorHTML, json: ElixirPhoenixFunctionalDemoWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: TurboOctoPancakes.PubSub,
+  pubsub_server: ElixirPhoenixFunctionalDemo.PubSub,
   live_view: [signing_salt: "RhYTGlHi"]
 
 # Configure the mailer
@@ -29,12 +29,12 @@ config :turbo_octo_pancakes, TurboOctoPancakesWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :turbo_octo_pancakes, TurboOctoPancakes.Mailer, adapter: Swoosh.Adapters.Local
+config :elixir_phoenix_functional_demo, ElixirPhoenixFunctionalDemo.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.25.4",
-  turbo_octo_pancakes: [
+  elixir_phoenix_functional_demo: [
     args:
       ~w(js/app.js --bundle --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
     cd: Path.expand("../assets", __DIR__),
@@ -44,7 +44,7 @@ config :esbuild,
 # Configure tailwind (the version is required)
 config :tailwind,
   version: "4.1.12",
-  turbo_octo_pancakes: [
+  elixir_phoenix_functional_demo: [
     args: ~w(
       --input=assets/css/app.css
       --output=priv/static/assets/css/app.css
@@ -61,11 +61,11 @@ config :logger, :default_formatter,
 config :phoenix, :json_library, Jason
 
 # Phoenix Swagger – generate priv/static/swagger.json from router and controller specs
-config :turbo_octo_pancakes, :phoenix_swagger,
+config :elixir_phoenix_functional_demo, :phoenix_swagger,
   swagger_files: %{
     "priv/static/swagger.json" => [
-      router: TurboOctoPancakesWeb.Router,
-      endpoint: TurboOctoPancakesWeb.Endpoint
+      router: ElixirPhoenixFunctionalDemoWeb.Router,
+      endpoint: ElixirPhoenixFunctionalDemoWeb.Endpoint
     ]
   }
 

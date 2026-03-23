@@ -5,7 +5,7 @@
 # Inside the script, you can read and write to any of your
 # repositories directly:
 #
-#     TurboOctoPancakes.Repo.insert!(%TurboOctoPancakes.SomeSchema{})
+#     ElixirPhoenixFunctionalDemo.Repo.insert!(%ElixirPhoenixFunctionalDemo.SomeSchema{})
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
@@ -15,7 +15,7 @@ Code.require_file("priv/repo/seeds/currencies.exs")
 Code.require_file("priv/repo/seeds/products.exs")
 
 defmodule Seeds do
-  alias TurboOctoPancakes.Repo
+  alias ElixirPhoenixFunctionalDemo.Repo
 
   def run do
     IO.puts("=== Starting database seeding ===\n")

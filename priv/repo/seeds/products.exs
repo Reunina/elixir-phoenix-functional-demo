@@ -1,9 +1,9 @@
 defmodule Seeds.Products do
   import Ecto.Query
-  alias TurboOctoPancakes.Repo
-  alias TurboOctoPancakes.Users.Currency
-  alias TurboOctoPancakes.Users.Product
-  alias TurboOctoPancakes.Users.User
+  alias ElixirPhoenixFunctionalDemo.Repo
+  alias ElixirPhoenixFunctionalDemo.Users.Currency
+  alias ElixirPhoenixFunctionalDemo.Users.Product
+  alias ElixirPhoenixFunctionalDemo.Users.User
 
   @batch_size 5_000
   @min_amount 30

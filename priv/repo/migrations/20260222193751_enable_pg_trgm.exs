@@ -1,4 +1,4 @@
-defmodule TurboOctoPancakes.Repo.Migrations.EnablePgTrgm do
+defmodule ElixirPhoenixFunctionalDemo.Repo.Migrations.EnablePgTrgm do
   use Ecto.Migration
 
   def up do

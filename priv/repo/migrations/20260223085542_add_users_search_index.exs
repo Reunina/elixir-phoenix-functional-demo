@@ -1,4 +1,4 @@
-defmodule TurboOctoPancakes.Repo.Migrations.AddUsersSearchIndex do
+defmodule ElixirPhoenixFunctionalDemo.Repo.Migrations.AddUsersSearchIndex do
   use Ecto.Migration
 
   def up do

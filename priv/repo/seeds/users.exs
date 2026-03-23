@@ -1,6 +1,6 @@
 defmodule Seeds.Users do
-  alias TurboOctoPancakes.Repo
-  alias TurboOctoPancakes.Users.User
+  alias ElixirPhoenixFunctionalDemo.Repo
+  alias ElixirPhoenixFunctionalDemo.Users.User
 
   @target_users 20_000
   @batch_size 5_000

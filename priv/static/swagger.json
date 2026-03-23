@@ -1,37 +1,51 @@
 {
   "info": {
     "version": "1.0",
-    "title": "Turbo Octo Pancakes API"
+    "title": "Elixir Phoenix Functional Demo API"
   },
   "host": "localhost:4000",
   "definitions": {
-    "UsersIndexResponse": {
+    "Product": {
+      "description": "A prouct entry for a user",
       "properties": {
-        "users": {
-          "description": "List of users",
-          "items": {
-            "$ref": "#/definitions/User"
-          },
-          "type": "array"
+        "amount": {
+          "description": "Product amount in minor units (e.g. cents)",
+          "type": "integer"
+        },
+        "currency": {
+          "description": "ISO 4217 currency code",
+          "type": "string"
+        },
+        "end_date": {
+          "description": "End date (ISO8601)",
+          "type": "string"
+        },
+        "id": {
+          "description": "Product ID",
+          "type": "string"
+        },
+        "label": {
+          "description": "Product label",
+          "type": "string"
+        },
+        "start_date": {
+          "description": "Start date (ISO8601)",
+          "type": "string"
+        },
+        "stock": {
+          "description": "Associated stock units",
+          "type": "integer"
         }
       },
       "required": [
-        "users"
+        "start_date",
+        "currency",
+        "stock",
+        "amount",
+        "label",
+        "id"
       ],
-      "title": "Users index response",
-      "type": "object"
-    },
-    "ErrorResponse": {
-      "properties": {
-        "error": {
-          "$ref": "#/definitions/ErrorObject",
-          "description": "Error payload"
-        }
-      },
-      "required": [
-        "error"
-      ],
-      "title": "Error response wrapper",
+      "title": "Product",
       "type": "object"
     },
     "User": {
@@ -81,49 +95,6 @@
       "title": "User",
       "type": "object"
     },
-    "Product": {
-      "description": "A prouct entry for a user",
-      "properties": {
-        "amount": {
-          "description": "Product amount in minor units (e.g. cents)",
-          "type": "integer"
-        },
-        "currency": {
-          "description": "ISO 4217 currency code",
-          "type": "string"
-        },
-        "end_date": {
-          "description": "End date (ISO8601)",
-          "type": "string"
-        },
-        "id": {
-          "description": "Product ID",
-          "type": "string"
-        },
-        "label": {
-          "description": "Product label",
-          "type": "string"
-        },
-        "start_date": {
-          "description": "Start date (ISO8601)",
-          "type": "string"
-        },
-        "stock": {
-          "description": "Associated stock units",
-          "type": "integer"
-        }
-      },
-      "required": [
-        "start_date",
-        "currency",
-        "stock",
-        "amount",
-        "label",
-        "id"
-      ],
-      "title": "Product",
-      "type": "object"
-    },
     "ErrorObject": {
       "properties": {
         "message": {
@@ -136,19 +107,42 @@
       ],
       "title": "Error",
       "type": "object"
+    },
+    "ErrorResponse": {
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/ErrorObject",
+          "description": "Error payload"
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "title": "Error response wrapper",
+      "type": "object"
+    },
+    "UsersIndexResponse": {
+      "properties": {
+        "users": {
+          "description": "List of users",
+          "items": {
+            "$ref": "#/definitions/User"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "users"
+      ],
+      "title": "Users index response",
+      "type": "object"
     }
   },
-  "tags": [
-    {
-      "name": "Users",
-      "description": "List and filter users"
-    }
-  ],
   "paths": {
     "/users": {
       "get": {
         "description": "Returns all users ordered by full name (first_name then last_name), optionally filtered by name and whether they have active products.",
-        "operationId": "TurboOctoPancakesWeb.UserController.index",
+        "operationId": "ElixirPhoenixFunctionalDemoWeb.UserController.index",
         "parameters": [
           {
             "description": "Filter users by first name, last name, or full name (case-insensitive)",
@@ -188,7 +182,7 @@
     "/users/invite-users": {
       "post": {
         "description": "Sends emails to all users that currently have at least one active product.",
-        "operationId": "TurboOctoPancakesWeb.UserController.invite_users",
+        "operationId": "ElixirPhoenixFunctionalDemoWeb.UserController.invite_users",
         "parameters": [],
         "responses": {
           "202": {
@@ -208,5 +202,11 @@
       }
     }
   },
-  "swagger": "2.0"
+  "swagger": "2.0",
+  "tags": [
+    {
+      "name": "Users",
+      "description": "List and filter users"
+    }
+  ]
 }

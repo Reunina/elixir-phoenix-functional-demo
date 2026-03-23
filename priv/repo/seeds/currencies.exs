@@ -1,6 +1,6 @@
 defmodule Seeds.Currencies do
-  alias TurboOctoPancakes.Repo
-  alias TurboOctoPancakes.Users.Currency
+  alias ElixirPhoenixFunctionalDemo.Repo
+  alias ElixirPhoenixFunctionalDemo.Users.Currency
 
   @csv_path "priv/repo/data/currencies.csv"
 
